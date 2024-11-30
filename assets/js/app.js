@@ -1,82 +1,102 @@
-function collectData(index) {
-    const description = document.getElementById('description').value
-    const date = document.getElementById('date').value
-    const time = document.getElementById('time').value
-    const  index = getNumberOfTasksInLocalStorage();
+
+function collectData() {
+    const task=document.getElementById(`task`).value;
+    const date=document.getElementById(`date`).value;
+    const time=document.getElementById(`time`).value;
+    const taskDateTime = new Date(date + "T" + time);
+
+    const now = new Date();
+    if (taskDateTime < now) {
+        alert (`Task is in the past!`)
+        return false;
+    }
     return {
-        index, 
-        description,
+        task,
         date,
-        time
+        time,
+        id: now.toISOString(),
     }
 }
 
 function generateHTML(data) {
-    const newHTML = `
-    <div class="task">
-                <div>
-                    <img src="assets/photos/tile.jpg" onclick="deleteTask()">
-                </div>
-                <div>${data.description}</div>
-                <div>${data.date}</div>
-                <div>${data.time}</div>
+    return `
+            <div class="note-background" data-id="${data.id}">
+            <img src="assets/photos/notebg.png" alt="yellow sticky note pic">
+            <div class="note-content">
+                <span class="glyphicon glyphicon-remove" aria-hidden="true" onclick="deleteNote(this)"></span>
+                <p>${data.task}</p>
+                <span>${data.date}</span>
+                <span>${data.time}</span>
             </div>
-    `
-    return newHTML
+        </div>
+    `;
 }
 
 function renderHTML(newHTML) {
-    const tasksContainer = document.getElementById('tasks')
-    tasksContainer.innerHTML += newHTML
+    const notesArea = document.getElementById(`notes-area`);
+    notesArea.insertAdjacentHTML(`beforeend`, newHTML)
+    const newNote=notesArea.lastElementChild;
+    newNote.classList.add(`fade-in`)
+}
+
+function saveToStorage(data) {
+    const storage = JSON.parse(localStorage.getItem(`tasks`)) || [];
+    storage.push(data);
+    localStorage.setItem(`tasks`, JSON.stringify(storage));
 }
 
 function clearForm() {
-    const taskForm = document.getElementById('taskForm')
-    taskForm.reset()
-
-    const description = document.getElementById('description')
-    description.focus()
-}
-
-function saveTaskToStorage(data) {
-    const currentTasksInStorageJSON = JSON.parse(localStorage.getItem('tasks')) || [];
-    currentTasksInStorageJSON.push(data)
-    localStorage.setItem('tasks', JSON.stringify(currentTasksInStorageJSON))
+    document.getElementById(`my-task-board-form`).reset();
+    document.getElementById(`task`).focus();
 }
 
 function addTask(event) {
-    event.preventDefault()
-    const data = collectData()
-    const newHTML = generateHTML(data)
-    saveTaskToStorage(data)
-    renderHTML(newHTML)
-    clearForm()
-}
-
-function getNumberOfTasksInLocalStorage() {
-    return JSON.parse(localstorage.getItem(`tasks`)).length
-}
-
-function loadTaskFromLocalStorage() {
-    const currentTasksInStorageJSON = JSON.parse(localStorage.getItem('tasks')) || [];
-    for (const task of currentTasksInStorageJSON) {
-        if (task.date < date) {
-            const newHTML = generateHTML(task)
-            renderHTML(newHTML)
-        }
+    event.preventDefault();
+    const data=collectData();
+    if (data) {
+        const newHTML=generateHTML(data);
+        renderHTML(newHTML);
+        saveToStorage(data);
+        clearForm();
     }
 }
-// function initStorage() {
-//     const currentTasksInStorageJSON = localStorage.getItem('tasks');
-//     if (!currentTasksInStorageJSON) {
-//         localStorage.setItem(`tasks`, [])
-//     }
-// }
 
-// initStorage()
+function deleteNote(span) {
+    const noteContainer=span.closest(`.note-background`);
+    const noteId = noteContainer.dataset.id;
 
-function deleteTask() {
-    alert (`will delete item #${index} from local storage`)
+
+    noteContainer.remove();
+    const storage = JSON.parse(localStorage.getItem(`tasks`)) || [];
+    const updateStorage = [];
+    for (const task of storage) {
+        if (task.id !== noteId) {
+            updateStorage.push(task);
+        }
+    }
+    localStorage.setItem(`tasks`, JSON.stringify(updateStorage));
 }
 
-loadTaskFromLocalStorage()
+function renderStoredNotes(newHTML) {
+    const notesArea = document.getElementById('notes-area');
+    notesArea.innerHTML += newHTML;
+}
+
+function loadStorage() {
+    const storage = JSON.parse(localStorage.getItem(`tasks`)) || [];
+    const updateStorage = []
+    let newHTML = "";
+    for (const task of storage) {
+        if (new Date(task.date + "T" + task.time) >= new Date()) {
+            updateStorage.push(task);
+            newHTML+=generateHTML(task)
+        }
+    }
+    if (newHTML) {
+        renderStoredNotes(newHTML);
+    }
+    localStorage.setItem(`tasks`, JSON.stringify(updateStorage));
+
+}
+
+loadStorage();
