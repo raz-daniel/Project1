@@ -1,0 +1,134 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    background-image: url(/assets/photos/tile.jpg);
+}
+
+header > h1 {
+    font-family: "Permanent Marker", cursive;
+    font-size: 48px;
+    margin: 0;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .phones, .tablet {
+    display: none
+  }
+
+  @media (max-width: 560px) { 
+    .phones {
+      display: block;  
+    }
+
+    header > h1 {
+        font-size: 32px;
+    }
+}
+
+.large-screen {
+    display: none;  
+  }
+
+@media (max-width: 1100px) { 
+    .large-screen {
+      display: block;  
+    }
+}
+
+@media (max-width: 767px) { 
+    .tablet {
+      display: block;  
+    }
+}
+
+#form-background {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 70px;
+}
+
+#form-background > img {
+    width: 50%;
+}
+
+#my-task-board-form {
+    position: absolute;
+    top: 10px;
+    bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    width: 35%;
+    gap: 10px;
+    height: 90%;
+}
+
+#my-task-board-form > textarea {
+    height: 100px;
+    min-height: 20px;
+}
+
+button {
+    cursor: pointer;
+    height: 30px;
+}
+
+#notes-area {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 50px;
+    margin-left: 50px;
+}
+
+.note-background {
+    position: relative;
+}
+
+.fade-in {
+    opacity: 0;
+    animation: fadeIn 2s ease forwards;
+}
+
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.note-content {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    height: 90%;
+    font-size: 16px;
+}
+.note-content > p {
+font-family: "Permanent Marker", cursive;
+    font-size: 16px;
+}
+.note-content:hover > .glyphicon {
+    display: block;
+    padding: 5px;
+}
+
+.note-content > .glyphicon {
+    text-align: right;
+    display: none;
+}
+
+.note-content > p {
+text-wrap: wrap;
+word-break: normal;
+height: 200px;
+width: 175px;
+overflow-wrap: break-word;
+overflow-y: auto;
+}
+
+.glyphicon:hover {
+    cursor: pointer;
+}
